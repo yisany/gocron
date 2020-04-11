@@ -1,11 +1,16 @@
 package gocron
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
 )
+
+var task = func() {
+	fmt.Println("I am a task")
+}
 
 func TestTags(t *testing.T) {
 	j, _ := NewScheduler(time.UTC).Every(1).Minute().Do(task)

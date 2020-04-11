@@ -13,8 +13,6 @@ type Job struct {
 	unit              timeUnit                 // time units, ,e.g. 'minutes', 'hours'...
 	atTime            time.Duration            // optional time at which this Job runs
 	err               error                    // error related to Job
-	lastRun           time.Time                // datetime of last run
-	nextRun           time.Time                // datetime of next run
 	startDay          time.Weekday             // Specific day of the week to start on
 	funcs             map[string]interface{}   // Map for the function task store
 	fparams           map[string][]interface{} // Map for function and  params of function
@@ -24,11 +22,8 @@ type Job struct {
 
 // NewJob creates a new Job with the provided interval
 func NewJob(interval uint64) *Job {
-	th := newTimeHelper()
 	return &Job{
 		interval: interval,
-		lastRun:  th.Unix(0, 0),
-		nextRun:  th.Unix(0, 0),
 		startDay: time.Sunday,
 		funcs:    make(map[string]interface{}),
 		fparams:  make(map[string][]interface{}),
@@ -91,11 +86,6 @@ func (j *Job) periodDuration() (time.Duration, error) {
 		return 0, ErrPeriodNotSpecified
 	}
 	return periodDuration, nil
-}
-
-// NextScheduledTime returns the time of the Job's next scheduled run
-func (j *Job) NextScheduledTime() time.Time {
-	return j.nextRun
 }
 
 // GetScheduledTime returns the specific time of day the Job will run at
