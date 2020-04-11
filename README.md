@@ -68,8 +68,7 @@ func main() {
     s2.Every(1).Tuesday().At("18:30:59").Do(task)
 
     // Begin job at a specific date/time. 
-    // Attention: scheduler timezone has precedence over job's timezone!
-    t := time.Date(2019, time.November, 10, 15, 0, 0, 0, time.UTC)
+    t := time.Date(time.Now().Year(), time.November, 10, 15, 0, 0, 0, time.UTC)
     s2.Every(1).Hour().StartAt(t).Do(task)
 
     // use .StartImmediately() to run job upon scheduler start

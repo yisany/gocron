@@ -22,8 +22,8 @@ type Job struct {
 	tags              []string                 // allow the user to tag Jobs with certain labels
 }
 
-// NewJob creates a new Job with the provided interval
-func NewJob(interval uint64) *Job {
+// newJob creates a new Job with the provided interval
+func newJob(interval uint64) *Job {
 	th := newTimeHelper()
 	return &Job{
 		interval: interval,
@@ -41,7 +41,7 @@ func (j *Job) run() {
 	callJobFuncWithParams(j.funcs[j.jobFunc], j.fparams[j.jobFunc])
 }
 
-// Err returns an error if one ocurred while creating the Job
+// Err returns an error if one occurred while creating the Job
 func (j *Job) Err() error {
 	return j.err
 }
@@ -93,8 +93,8 @@ func (j *Job) periodDuration() (time.Duration, error) {
 	return periodDuration, nil
 }
 
-// NextScheduledTime returns the time of the Job's next scheduled run
-func (j *Job) NextScheduledTime() time.Time {
+// GetScheduledDateTime returns the date & time of the Job's next scheduled run
+func (j *Job) GetScheduledDateTime() time.Time {
 	return j.nextRun
 }
 

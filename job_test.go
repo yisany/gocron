@@ -27,7 +27,7 @@ func TestGetScheduledTime(t *testing.T) {
 
 func TestGetWeekday(t *testing.T) {
 	s := NewScheduler(time.UTC)
-	weedayJob, _ := s.Every(1).Weekday(time.Wednesday).Do(task)
+	weekdayJob, _ := s.Every(1).Weekday(time.Wednesday).Do(task)
 	nonWeekdayJob, _ := s.Every(1).Minute().Do(task)
 
 	testCases := []struct {
@@ -36,7 +36,7 @@ func TestGetWeekday(t *testing.T) {
 		expectedWeekday time.Weekday
 		expectedError   error
 	}{
-		{"success", weedayJob, time.Wednesday, nil},
+		{"success", weekdayJob, time.Wednesday, nil},
 		{"fail - not set for weekday", nonWeekdayJob, time.Sunday, ErrNotScheduledWeekday},
 	}
 

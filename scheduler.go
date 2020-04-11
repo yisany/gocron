@@ -136,7 +136,7 @@ func (s *Scheduler) NextRun() (*Job, time.Time) {
 
 // Every schedules a new periodic Job with interval
 func (s *Scheduler) Every(interval uint64) *Scheduler {
-	job := NewJob(interval)
+	job := newJob(interval)
 	s.jobs = append(s.jobs, job)
 	return s
 }
@@ -232,7 +232,7 @@ func (s *Scheduler) Scheduled(j interface{}) bool {
 	return false
 }
 
-// Clear delete all scheduled Jobs
+// Clear deletes all scheduled Jobs
 func (s *Scheduler) Clear() {
 	s.jobs = newEmptyJobSlice()
 }
