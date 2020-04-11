@@ -40,10 +40,16 @@ func (s *Scheduler) StartAsync() chan struct{} {
 	var tickers []*time.Ticker
 
 	// for each schedule time, runs all jobs associated with it.
-	//  Currently we start a goroutine with a select for each timeframe
+	// Currently we start a goroutine with a select for each timeframe
 	// A better approach would be to have a single select for all timeframes,
 	// creating an or() function that returns at any channel response
 	for duration, jobs := range s.jobsAtTime {
+		for _, job := range jobs {
+			if job.startsImmediately {
+				s.runJob(job)
+			}
+		}
+
 		ticker := time.NewTicker(duration)
 		tickers = append(tickers, ticker)
 		go func(jobs JobSlice) {
@@ -55,7 +61,7 @@ func (s *Scheduler) StartAsync() chan struct{} {
 						return
 					}
 					for _, job := range jobs {
-						go job.run()
+						s.runJob(job)
 					}
 				case <-stopped:
 					ticker.Stop()
@@ -66,6 +72,10 @@ func (s *Scheduler) StartAsync() chan struct{} {
 	}
 
 	return stopped
+}
+
+func (s *Scheduler) runJob(job *Job) {
+	go job.run()
 }
 
 // Jobs returns the list of Jobs from the Scheduler
