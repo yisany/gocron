@@ -311,6 +311,18 @@ func (s *Scheduler) shouldRun(j *Job) bool {
 	return s.time.Now(s.loc).Unix() >= j.nextRun.Unix()
 }
 
+// setImmediately sets the job Immediately
+func (s *Scheduler) setImmediately() {
+	currentJob := s.getCurrentJob()
+	currentJob.startsImmediately = true
+}
+
+// Immediately sets the job will execute when the task is started
+func (s *Scheduler) Immediately() *Scheduler {
+	s.setImmediately()
+	return s
+}
+
 // setUnit sets the unit type
 func (s *Scheduler) setUnit(unit timeUnit) {
 	currentJob := s.getCurrentJob()
