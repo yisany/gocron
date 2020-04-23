@@ -2,6 +2,7 @@ package gocron
 
 import (
 	"fmt"
+	"github.com/go-co-op/gocron/cronexpr"
 	"time"
 )
 
@@ -10,6 +11,7 @@ type Job struct {
 	interval          uint64                   // pause interval * unit between runs
 	unit              timeUnit                 // time units, ,e.g. 'minutes', 'hours'...
 	periodDuration    time.Duration            // interval * unit
+	expr              *cronexpr.Expression     // cronexpr expression mode
 	startsImmediately bool                     // if the Job should run upon scheduler start
 	jobFunc           string                   // the Job jobFunc to run, func[jobFunc]
 	atTime            time.Duration            // optional time at which this Job runs
@@ -24,16 +26,32 @@ type Job struct {
 }
 
 // NewJob creates a new Job with the provided interval
-func NewJob(interval uint64) *Job {
+func NewJob(interval interface{}) *Job {
 	th := newTimeHelper()
-	return &Job{
-		interval: interval,
-		lastRun:  th.Unix(0, 0),
-		nextRun:  th.Unix(0, 0),
-		startDay: time.Sunday,
-		funcs:    make(map[string]interface{}),
-		fparams:  make(map[string][]interface{}),
-		tags:     []string{},
+	switch interval.(type) {
+	case uint64:
+		return &Job{
+			interval: interval.(uint64),
+			lastRun:  th.Unix(0, 0),
+			nextRun:  th.Unix(0, 0),
+			startDay: time.Sunday,
+			funcs:    make(map[string]interface{}),
+			fparams:  make(map[string][]interface{}),
+			tags:     []string{},
+		}
+	case string:
+		expr, _ := cronexpr.Parse(interval.(string))
+		return &Job{
+			expr:     expr,
+			lastRun:  th.Unix(0, 0),
+			nextRun:  th.Unix(0, 0),
+			startDay: time.Sunday,
+			funcs:    make(map[string]interface{}),
+			fparams:  make(map[string][]interface{}),
+			tags:     []string{},
+		}
+	default:
+		return &Job{}
 	}
 }
 

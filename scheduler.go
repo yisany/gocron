@@ -91,6 +91,8 @@ func (s *Scheduler) scheduleNextRun(j *Job) error {
 			j.nextRun = j.nextRun.Add(time.Duration(dayDiff) * 24 * time.Hour)
 		}
 		j.nextRun = j.nextRun.Add(j.atTime)
+	case cron:
+		j.nextRun = j.expr.Next(time.Now().UTC())
 	}
 
 	// advance to next possible Schedule
@@ -130,8 +132,8 @@ func (s *Scheduler) NextRun() (*Job, time.Time) {
 }
 
 // Every schedules a new periodic Job with interval
-func (s *Scheduler) Every(interval uint64) *Scheduler {
-	job := NewJob(interval)
+func (s *Scheduler) Every(args interface{}) *Scheduler {
+	job := NewJob(args)
 	s.jobs = append(s.jobs, job)
 	return s
 }
@@ -254,7 +256,8 @@ func (s *Scheduler) Do(jobFun interface{}, params ...interface{}) (*Job, error) 
 	j.fparams[fname] = params
 	j.jobFunc = fname
 
-	if j.periodDuration == 0 {
+	// CRON mode should not set periodDuration because it uses Cron expression
+	if j.periodDuration == 0 && j.expr == nil {
 		err := j.setPeriodDuration()
 		if err != nil {
 			return nil, err
@@ -327,6 +330,12 @@ func (s *Scheduler) Immediately() *Scheduler {
 func (s *Scheduler) setUnit(unit timeUnit) {
 	currentJob := s.getCurrentJob()
 	currentJob.unit = unit
+}
+
+// Cron sets the unit with cron
+func (s *Scheduler) Cron() *Scheduler {
+	s.setUnit(cron)
+	return s
 }
 
 // Second sets the unit with seconds

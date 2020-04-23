@@ -11,6 +11,12 @@ var task = func() {
 	fmt.Println("I am a task")
 }
 
+func Examplesecheduler_Cron() {
+	s := gocron.NewScheduler(time.UTC)
+	s.Every("*/5 * * * * *").Cron().Do(task)
+	s.StartBlocking()
+}
+
 func ExampleScheduler_StartBlocking() {
 	s := gocron.NewScheduler(time.UTC)
 	s.Every(3).Seconds().Do(task)

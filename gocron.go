@@ -37,6 +37,7 @@ const (
 	hours
 	days
 	weeks
+	cron
 )
 
 func callJobFuncWithParams(jobFunc interface{}, params []interface{}) ([]reflect.Value, error) {
